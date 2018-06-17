@@ -57,6 +57,29 @@ recyclerView.setAdapter(songAdapter);
             public void onItemClick(Button b, View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
+                if(mediaPlayer.isPlaying()){//stoping
+                   mediaPlayer.reset();
+                   b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+
+
+
+                }else{//playing
+                    try {
+                        mediaPlayer.setDataSource(obj.getSongUrl());
+                        mediaPlayer.prepare();
+                        b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                              mp.start();
+                            }
+                        });
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
             }
         });
