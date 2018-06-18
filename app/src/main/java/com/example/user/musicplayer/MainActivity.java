@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<SongInfo> songsArray;
     private  final int REQ_CODE=123;
+    int prevPosition=-1;
 
 
     @Override
@@ -57,8 +58,33 @@ recyclerView.setAdapter(songAdapter);
             public void onItemClick(Button b, View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
+                if(prevPosition==position)
+                    {   if(mediaPlayer.isPlaying()){
+                    mediaPlayer.pause();
+                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    } else {
+                    mediaPlayer.start();
+                        b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                    }
+                     }
+
+
+                  else
+                {
+                    releaseMediaPlayer();
+                    mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                    mediaPlayer.start();
+                }
+
+
+
+
+/*
+
                 if(mediaPlayer.isPlaying()){//stoping
                    mediaPlayer.reset();
+
                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
 
 
@@ -80,6 +106,8 @@ recyclerView.setAdapter(songAdapter);
                         e.printStackTrace();
                     }
                 }
+*/
+                prevPosition=position;
 
             }
         });
@@ -153,5 +181,21 @@ recyclerView.setAdapter(songAdapter);
           default:super.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
 
+    }
+
+    private void releaseMediaPlayer() {
+        // If the media player is not null, then it may be currently playing a sound.
+        if (mediaPlayer != null) {
+            // Regardless of the current state of the media player, release its resources
+            // because we no longer need it.
+            mediaPlayer.release();
+
+            // Set the media player back to null. For our code, we've decided that
+            // setting the media player to null is an easy way to tell that the media player
+            // is not configured to play an audio file at the moment.
+            mediaPlayer= null;
+           // mAudioManager.abandonAudioFocus(afChangeListener);
+
+        }
     }
 }
