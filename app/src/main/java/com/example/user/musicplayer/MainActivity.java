@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<SongInfo> songsArray;
     private  final int REQ_CODE=123;
+    int prevposition=-1;
 
 
     @Override
