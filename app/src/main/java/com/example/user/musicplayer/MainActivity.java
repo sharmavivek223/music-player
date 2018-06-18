@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<SongInfo> songsArray;
     private  final int REQ_CODE=123;
-    int prevPosition=-1;
-    Button prevButton;
+    private int prevPosition=-1;
+    private Button prevPlayButton,prevStopButton;
 
 
     @Override
@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         songsArray = new ArrayList<SongInfo>();
         recyclerView = findViewById(R.id.recyclerView);
         seekBar = findViewById(R.id.seekBar);
-songAdapter=new SongAdapter(this,songsArray);
-recyclerView.setAdapter(songAdapter);
+        songAdapter=new SongAdapter(this,songsArray);
+        recyclerView.setAdapter(songAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -54,18 +54,30 @@ recyclerView.setAdapter(songAdapter);
         CheckPermission();
 
         mediaPlayer = new MediaPlayer();
-       songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
+        songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
             @Override
-            public void onItemClick(Button b, View v, final SongInfo obj, int position){
+            public void onStopClick(Button b,Button sb, View v, SongInfo obj, int position) {
+
+                releaseMediaPlayer();
+                mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+
+                sb.setVisibility(View.GONE);
+                b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+
+            }
+
+            @Override
+            public void onPlayClick(Button b,Button sb, View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
                 if(prevPosition==position)
-                    {   if(mediaPlayer.isPlaying()){
+                    {
+                        if(mediaPlayer.isPlaying()){
                     mediaPlayer.pause();
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     } else {
                     mediaPlayer.start();
-                        b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     }
                      }
 
@@ -75,12 +87,16 @@ recyclerView.setAdapter(songAdapter);
                     releaseMediaPlayer();
                     mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                    if(prevPosition!=-1)
-                    prevButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    if(prevPosition!=-1){
+                    prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    prevStopButton.setVisibility(View.GONE);
+                    }
                     mediaPlayer.start();
+                    sb.setVisibility(View.VISIBLE);
 
                 }
-
+                //im setting it visible here cause after a stop button press it will not be visible again on play button click
+                sb.setVisibility(View.VISIBLE);
 
 
 
@@ -112,7 +128,8 @@ recyclerView.setAdapter(songAdapter);
                 }
 */
                 prevPosition=position;
-                prevButton=b;
+                prevPlayButton=b;
+                prevStopButton=sb;
 
             }
         });

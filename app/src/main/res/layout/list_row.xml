@@ -35,7 +35,12 @@
 
         </LinearLayout>
 
-
+        <Button
+            android:id="@+id/StopBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:drawable/checkbox_off_background"
+            android:visibility="gone" />
         <Button
             android:id="@+id/ActionBtn"
             android:layout_width="40dp"
@@ -45,11 +50,7 @@
 
             android:background="@android:drawable/ic_media_play"
             />
-        <Button
-            android:id="@+id/StopBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:visibility="gone"/>
+
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

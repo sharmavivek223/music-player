@@ -26,7 +26,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongHolder> {
     //TODO add another button click listener for stop button
     OnItemClickListner onItemClickListner;
     public interface OnItemClickListner{
-        void onItemClick(Button b,View v ,SongInfo obj,int position) ;
+        void onPlayClick(Button b,Button sb,View v ,SongInfo obj,int position) ;
+        void onStopClick(Button b,Button sb,View v ,SongInfo obj,int position) ;
     }
 public void setOnItemClickListner(OnItemClickListner onItemClickListner){
         this.onItemClickListner=onItemClickListner;
@@ -48,7 +49,7 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
             public void onClick(View v) {
                 if(onItemClickListner !=null){
 
-                        onItemClickListner.onItemClick(holder.actionBtn,v,sinfo,position);
+                        onItemClickListner.onPlayClick(holder.actionBtn,holder.stopBtn,v,sinfo,position);
 
                 }
             }
@@ -56,7 +57,11 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
         holder.stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickListner.onItemClick(holder.stopBtn,v,sinfo,position);
+                if(onItemClickListner !=null){
+
+                    onItemClickListner.onStopClick(holder.actionBtn,holder.stopBtn,v,sinfo,position);
+
+                }
             }
         });
 
