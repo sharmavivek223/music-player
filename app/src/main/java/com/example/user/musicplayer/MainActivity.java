@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<SongInfo> songsArray;
     private  final int REQ_CODE=123;
     int prevPosition=-1;
+    Button prevButton;
 
 
     @Override
@@ -74,7 +75,10 @@ recyclerView.setAdapter(songAdapter);
                     releaseMediaPlayer();
                     mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                    if(prevPosition!=-1)
+                    prevButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     mediaPlayer.start();
+
                 }
 
 
@@ -108,6 +112,7 @@ recyclerView.setAdapter(songAdapter);
                 }
 */
                 prevPosition=position;
+                prevButton=b;
 
             }
         });
