@@ -1,11 +1,13 @@
 package com.example.user.musicplayer;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.media.AudioManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -30,17 +32,78 @@ public class MainActivity extends AppCompatActivity {
     private   SeekBar seekBar;
     private RecyclerView recyclerView;
     private SongAdapter songAdapter;
-
     private ArrayList<SongInfo> songsArray;
     private  final int REQ_CODE=123;
     private int prevPosition=-1;
     private Button prevPlayButton,prevStopButton;
+    private AudioManager mAudioManager;
+    private int trial=0;
+    //trial variable checks for raising sound back after notification sound
+
+
+    AudioManager.OnAudioFocusChangeListener afChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                public void onAudioFocusChange(int focusChange) {
+                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                        // Pause playback because your Audio Focus was
+                        // temporarily stolen, but will be back soon.
+                        // i.e. for a phone call
+                        mediaPlayer.pause();
+                        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                        // Stop playback, because you lost the Audio Focus.
+                        // i.e. the user started some other playback app
+                        // Remember to unregister your controls/buttons here.
+                        // And release the kra — Audio Focus!
+                        // You’re done.
+                        releaseMediaPlayer();
+                        changeButton(prevStopButton,prevPlayButton);
+                    } else if (focusChange ==
+                            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                        // Lower the volume, because something else is also
+                        // playing audio over you.
+                        // i.e. for notifications or navigation directions
+                        // Depending on your audio playback, you may prefer to
+                        // pause playback here instead. You do you.
+                        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+                        mAudioManager.adjustVolume(AudioManager.ADJUST_LOWER,AudioManager.FLAG_PLAY_SOUND);
+                        mAudioManager.adjustVolume(AudioManager.ADJUST_LOWER,AudioManager.FLAG_PLAY_SOUND);
+                        mAudioManager.adjustVolume(AudioManager.ADJUST_LOWER,AudioManager.FLAG_PLAY_SOUND);
+
+                        trial=1;
+
+                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN ||
+                            focusChange==AudioManager.AUDIOFOCUS_GAIN_TRANSIENT ||
+                            focusChange==AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE) {
+                        // Resume playback, because you hold the Audio Focus
+                        // again!
+                        // i.e. the phone call ended or the nav directions
+                        // are finished
+                        // If you implement ducking and lower the volume, be
+                        // sure to return it to normal here, as well.
+                        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                        mediaPlayer.start();
+                        if(trial==1)
+                        {
+                            mAudioManager.adjustVolume(AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
+                            mAudioManager.adjustVolume(AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
+                            mAudioManager.adjustVolume(AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
+
+                            trial=0;
+                        }
+                    }
+
+                }
+            };
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mAudioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
         songsArray = new ArrayList<SongInfo>();
         recyclerView = findViewById(R.id.recyclerView);
         seekBar = findViewById(R.id.seekBar);
@@ -53,43 +116,43 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(dividerItemDecoration);
         CheckPermission();
 
-        mediaPlayer = new MediaPlayer();
+       // mediaPlayer = new MediaPlayer();
         songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
+
             @Override
-            public void onStopClick(Button b,Button sb, View v, SongInfo obj, int position) {
+            public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
 
                 releaseMediaPlayer();
-                mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
-
+                mediaPlayer = MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
 
             }
 
             @Override
-            public void onPlayClick(Button b,Button sb, View v, final SongInfo obj, int position){
-               //code for play buttons goes here
+            public void onPlayClick(Button b, Button sb, View v, final SongInfo obj, int position) {
+                //code for play buttons goes here
 
-                if(prevPosition==position)
-                    {
-                        if(mediaPlayer.isPlaying()){
-                    mediaPlayer.pause();
-                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                int result = mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+                    return;
+
+
+                if (prevPosition == position) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     } else {
-                    mediaPlayer.start();
-                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                        mediaPlayer.start();
+                        b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     }
-                     }
-
-
-                  else
-                {
+                } else {
                     releaseMediaPlayer();
-                    mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+                    mediaPlayer = MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                    if(prevPosition!=-1){
-                    prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                    prevStopButton.setVisibility(View.GONE);
+                    if (prevPosition != -1) {
+                        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                        prevStopButton.setVisibility(View.GONE);
                     }
                     mediaPlayer.start();
                     sb.setVisibility(View.VISIBLE);
@@ -98,39 +161,9 @@ public class MainActivity extends AppCompatActivity {
                 //im setting it visible here cause after a stop button press it will not be visible again on play button click
                 sb.setVisibility(View.VISIBLE);
 
-
-
-/*
-
-                if(mediaPlayer.isPlaying()){//stoping
-                   mediaPlayer.reset();
-
-                   b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-
-
-
-                }else{//playing
-                    try {
-                        mediaPlayer.setDataSource(obj.getSongUrl());
-                        mediaPlayer.prepare();
-                        b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-
-                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mp) {
-                              mp.start();
-                            }
-                        });
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-*/
-                prevPosition=position;
-                prevPlayButton=b;
-                prevStopButton=sb;
-
+                prevPosition = position;
+                prevPlayButton = b;
+                prevStopButton = sb;
             }
         });
 
@@ -216,8 +249,17 @@ public class MainActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mediaPlayer= null;
-           // mAudioManager.abandonAudioFocus(afChangeListener);
+            mAudioManager.abandonAudioFocus(afChangeListener);
 
         }
     }
+
+    private void changeButton(Button sp, Button playPause)
+    {
+        sp.setVisibility(View.GONE);
+        playPause.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+    }
 }
+
+
+
