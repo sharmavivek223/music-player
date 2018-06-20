@@ -121,9 +121,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 SongInfo songInfo=songInfos.get(position);
-             //   int result = mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-           //     if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
-          //          return;
+                int result = mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                 if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+                   return;
                 releaseMediaPlayer();
                 mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(songInfo.getSongUrl()));
                 mediaPlayer.start();
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-/*
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
       switch (requestCode){
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
     }
-*/
+
     private void releaseMediaPlayer() {
         // If the media player is not null, then it may be currently playing a sound.
         if (mediaPlayer != null) {
