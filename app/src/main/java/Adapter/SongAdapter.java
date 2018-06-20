@@ -22,6 +22,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongHolder> {
     public SongAdapter(Context context,ArrayList<SongInfo> _songs) {
         this._songs = _songs;
         this.context = context;
+        setHasStableIds(true);
     }
     //TODO add another button click listener for stop button
     OnItemClickListner onItemClickListner;
@@ -40,26 +41,29 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
     }
     //to perform action on any objects in any view
     @Override
-    public void onBindViewHolder(final SongHolder holder, final int position) {
-        final SongInfo sinfo=_songs.get(position);
+    public void onBindViewHolder(final SongHolder holder, int position) {
+
+        final SongInfo sinfo=_songs.get(holder.getAdapterPosition());
         holder.songName.setText(sinfo.songName);
         holder.artistName.setText(sinfo.artistName);
+
         holder.actionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(onItemClickListner !=null){
 
-                        onItemClickListner.onPlayClick(holder.actionBtn,holder.stopBtn,v,sinfo,position);
+                        onItemClickListner.onPlayClick(holder.actionBtn,holder.stopBtn,v,sinfo, holder.getAdapterPosition());
 
                 }
             }
         });
+
         holder.stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(onItemClickListner !=null){
 
-                    onItemClickListner.onStopClick(holder.actionBtn,holder.stopBtn,v,sinfo,position);
+                    onItemClickListner.onStopClick(holder.actionBtn,holder.stopBtn,v,sinfo, holder.getAdapterPosition());
 
                 }
             }
@@ -67,6 +71,11 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
 
 
     }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     //gives you the count of item
     @Override
     public int getItemCount() {

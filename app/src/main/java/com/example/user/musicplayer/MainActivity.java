@@ -6,20 +6,21 @@ import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import  android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import Adapter.SongAdapter;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private  final int REQ_CODE=123;
     private int prevPosition=-1;
     private Button prevPlayButton,prevStopButton;
+    private TextView elapsedTimeTextView,durationTextView;
+    private Handler handler;
 
 
     @Override
@@ -42,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         songsArray = new ArrayList<SongInfo>();
-        recyclerView = findViewById(R.id.recyclerView);
-        seekBar = findViewById(R.id.seekBar);
+        recyclerView =(RecyclerView) findViewById(R.id.recyclerView);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        elapsedTimeTextView=(TextView)findViewById(R.id.elapsedTimeTextView);
+        durationTextView=(TextView)findViewById(R.id.durationTextView);
         songAdapter=new SongAdapter(this,songsArray);
         recyclerView.setAdapter(songAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -51,12 +56,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(songAdapter);
         recyclerView.addItemDecoration(dividerItemDecoration);
+
         CheckPermission();
 
         mediaPlayer = new MediaPlayer();
+
         songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
             @Override
-            public void onStopClick(Button b,Button sb, View v, SongInfo obj, int position) {
+            public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
 
                 releaseMediaPlayer();
                 mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPlayClick(Button b,Button sb, View v, final SongInfo obj, int position){
+            public void onPlayClick(Button b, Button sb, View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
                 if(prevPosition==position)
@@ -92,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                     prevStopButton.setVisibility(View.GONE);
                     }
                     mediaPlayer.start();
+                    seekBar.setMax(mediaPlayer.getDuration());
+
                     sb.setVisibility(View.VISIBLE);
 
                 }
@@ -134,7 +143,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    mediaPlayer.seekTo(progress);
+                }
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     private void CheckPermission() {
@@ -177,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
                 //passing the info to song info object
                 SongInfo sinfo=new SongInfo(name,artist,url);
                 songsArray.add(sinfo);
+
                }while(cursor.moveToNext());
             }//we have to get rid of cursor after use since it will be heavy on memory
             cursor.close();
@@ -186,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
             DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(songAdapter);
+            recyclerView.setItemViewCacheSize(songAdapter.getItemCount());
             recyclerView.addItemDecoration(dividerItemDecoration);
 
         }
