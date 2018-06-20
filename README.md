@@ -1,3 +1,4 @@
 # music-player
 
-Play and pause buttons are showing errors in large no. of songs.
+Play and pause buttons not working properly.
+Adjust the position on setOnItemClickListner
