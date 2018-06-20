@@ -17,7 +17,10 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -30,15 +33,16 @@ import Model.SongInfo;
 public class MainActivity extends AppCompatActivity {
     private   MediaPlayer mediaPlayer;
     private   SeekBar seekBar;
-    private RecyclerView recyclerView;
-    private SongAdapter songAdapter;
-    private ArrayList<SongInfo> songsArray;
     private  final int REQ_CODE=123;
     private int prevPosition=-1;
     private Button prevPlayButton,prevStopButton;
     private AudioManager mAudioManager;
     private int trial=0;
     //trial variable checks for raising sound back after notification sound
+
+
+
+    final ArrayList<SongInfo> songInfos=new ArrayList<SongInfo>();
 
 
     AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -102,19 +106,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.list_view);
         mAudioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        songsArray = new ArrayList<SongInfo>();
-        recyclerView = findViewById(R.id.recyclerView);
-        seekBar = findViewById(R.id.seekBar);
-        songAdapter=new SongAdapter(this,songsArray);
-        recyclerView.setAdapter(songAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(songAdapter);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+
+
+
         CheckPermission();
+
+        SongAdapter adapter=new SongAdapter(this,songInfos);
+        ListView listView=(ListView)findViewById(R.id.list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                SongInfo songInfo=songInfos.get(position);
+             //   int result = mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+           //     if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+          //          return;
+                releaseMediaPlayer();
+                mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(songInfo.getSongUrl()));
+                mediaPlayer.start();
+            }
+        });
+
+
+
+/*
+
+
 
        // mediaPlayer = new MediaPlayer();
         songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
@@ -123,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
 
                 releaseMediaPlayer();
-                mediaPlayer = MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+                //mediaPlayer = MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
 
@@ -166,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 prevStopButton = sb;
             }
         });
-
+*/
 
     }
 
@@ -187,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void LoadSongs() {//Time to fetch songs data
+
+
         /*
         uri stands for uniform resourse indicator,a lot lot like an url
         every url is uri but not every uri is url since url and urn(UR Names) are both
@@ -209,21 +231,16 @@ public class MainActivity extends AppCompatActivity {
                 String url=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                 //passing the info to song info object
                 SongInfo sinfo=new SongInfo(name,artist,url);
-                songsArray.add(sinfo);
+                songInfos.add(sinfo);
                }while(cursor.moveToNext());
             }//we have to get rid of cursor after use since it will be heavy on memory
             cursor.close();
             //time to set all info in an adapter to display it
-            songAdapter=new SongAdapter(this,songsArray);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setAdapter(songAdapter);
-            recyclerView.addItemDecoration(dividerItemDecoration);
 
         }
-    }
 
+    }
+/*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
       switch (requestCode){
@@ -237,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
     }
-
+*/
     private void releaseMediaPlayer() {
         // If the media player is not null, then it may be currently playing a sound.
         if (mediaPlayer != null) {
