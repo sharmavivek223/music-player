@@ -22,7 +22,7 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.lang.Math;
 import java.util.ArrayList;
 
 import Adapter.SongAdapter;
@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView elapsedTimeTextView,durationTextView;
     private Handler handler;
     private int trial=0;
+    //trial variable controls raising sound at the end of notification sound
+    double duration=0;
+    int minutes=0,seconds=0;
 
     AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -111,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
         mAudioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
         recyclerView =(RecyclerView) findViewById(R.id.recyclerView);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
-     //   elapsedTimeTextView=(TextView)findViewById(R.id.elapsedTimeTextView);
-     //   durationTextView=(TextView)findViewById(R.id.durationTextView);
+        elapsedTimeTextView=(TextView)findViewById(R.id.elapsedTimeTextView);
+        durationTextView=(TextView)findViewById(R.id.durationTextView);
         songAdapter=new SongAdapter(this,songsArray);
         recyclerView.setAdapter(songAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -129,8 +132,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
 
                 releaseMediaPlayer();
-                mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
-
+               // mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
 
@@ -162,6 +164,15 @@ public class MainActivity extends AppCompatActivity {
                     if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         return;
                     mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+                    duration=mediaPlayer.getDuration();
+                    duration=duration/1000;
+                    int c= (int) Math.round(duration);
+                    minutes=c/60;
+                    seconds=c%60;
+
+
+                    durationTextView.setText(Integer.toString(minutes)+":"+Integer.toString(seconds));
+                    //durationTextView.setText(mediaPlayer.getDuration());
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     if(prevPosition!=-1){
                     prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
