@@ -165,13 +165,10 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                     duration=mediaPlayer.getDuration();
-                    duration=duration/1000;
-                    int c= (int) Math.round(duration);
-                    minutes=c/60;
-                    seconds=c%60;
 
 
-                    durationTextView.setText(Integer.toString(minutes)+":"+Integer.toString(seconds));
+
+                    durationTextView.setText(timeConvertor((int) duration));
                     //durationTextView.setText(mediaPlayer.getDuration());
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     if(prevPosition!=-1){
@@ -198,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser){
                     mediaPlayer.seekTo(progress);
+                    elapsedTimeTextView.setText(timeConvertor(progress));
                 }
             }
 
@@ -211,6 +209,18 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private String timeConvertor(int millis){
+        millis=millis/1000;
+        int c= Math.round(millis);
+        minutes=c/60;
+        seconds=c%60;
+        String converted;
+        if(seconds<10)
+        converted=minutes+":0"+seconds;
+        else
+            converted=minutes+":"+seconds;
+        return converted;
     }
 
     private void CheckPermission() {
