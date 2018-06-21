@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
     int minutes=0,seconds=0;
+    private Thread updateThread;
+
 
     AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(songAdapter);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
+
         CheckPermission();
 
 
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                             if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                                 return;
                     mediaPlayer.start();
+                            updateThread();
                      b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     }
                      }
@@ -159,26 +163,26 @@ public class MainActivity extends AppCompatActivity {
 
                   else
                 {
+                    if(prevPosition!=-1){
+                    prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    prevStopButton.setVisibility(View.GONE);
+                    }
                     releaseMediaPlayer();
                     int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                     if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         return;
                     mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                     duration=mediaPlayer.getDuration();
-
-
-
                     durationTextView.setText(timeConvertor((int) duration));
-                    //durationTextView.setText(mediaPlayer.getDuration());
-                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                    if(prevPosition!=-1){
-                    prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                    prevStopButton.setVisibility(View.GONE);
-                    }
                     mediaPlayer.start();
+                    updateThread();
                     seekBar.setMax(mediaPlayer.getDuration());
 
                     sb.setVisibility(View.VISIBLE);
+                    //durationTextView.setText(mediaPlayer.getDuration());
+                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                    
+
 
                 }
                 //im setting it visible here cause after a stop button press it will not be visible again on play button click
@@ -195,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser){
                     mediaPlayer.seekTo(progress);
-                    elapsedTimeTextView.setText(timeConvertor(progress));
+
+                    elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
                 }
             }
 
@@ -307,5 +312,30 @@ public class MainActivity extends AppCompatActivity {
            // mAudioManager.abandonAudioFocus(afChangeListener);
 
         }
+    }
+    public void updateThread(){
+        updateThread=new Thread(){
+            @Override
+            public void run() {
+                try {while(mediaPlayer.isPlaying()&&mediaPlayer!=null){
+                    Thread.sleep(50);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {//set up seekbar after every 50 milli secs
+                            seekBar.setMax(mediaPlayer.getDuration());
+                            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                            //updating duration text
+                            elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
+
+                        }
+                    });}
+
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        };
+        updateThread.start();
+
     }
 }
