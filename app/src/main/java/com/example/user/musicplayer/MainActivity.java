@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                // mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                updateThread.interrupt();
 
             }
 
