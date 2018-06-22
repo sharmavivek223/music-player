@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                         // Remember to unregister your controls/buttons here.
                         // And release the kra — Audio Focus!
                         // You’re done.
-                        releaseMediaPlayer();
+                        releaseMediaPlayer(mediaPlayer);
                         prevStopButton.setVisibility(View.GONE);
                         prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     } else if (focusChange ==
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
 
-                releaseMediaPlayer();
+                releaseMediaPlayer(mediaPlayer);
                // mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPlayClick(Button b, Button sb, View v, final SongInfo obj, int position){
+            public void onPlayClick(final Button b, final Button sb, View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
                 if(prevPosition==position)
@@ -156,6 +156,17 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                     mediaPlayer.start();
                             updateThread();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    updateThread.interrupt();
+                                    releaseMediaPlayer(mp);
+                                    seekBar.setProgress(0);
+                                    sb.setVisibility(View.GONE);
+                                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+
+                                }
+                            });
                      b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     }
                      }
@@ -167,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     prevStopButton.setVisibility(View.GONE);
                     }
-                    releaseMediaPlayer();
+                    releaseMediaPlayer(mediaPlayer);
                     int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                     if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         return;
@@ -175,13 +186,23 @@ public class MainActivity extends AppCompatActivity {
                     duration=mediaPlayer.getDuration();
                     durationTextView.setText(timeConvertor((int) duration));
                     mediaPlayer.start();
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            updateThread.interrupt();
+                            releaseMediaPlayer(mp);
+                            resetSeekbar();
+                            sb.setVisibility(View.GONE);
+                            b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                        }
+                    });
                     updateThread();
                     seekBar.setMax(mediaPlayer.getDuration());
 
                     sb.setVisibility(View.VISIBLE);
                     //durationTextView.setText(mediaPlayer.getDuration());
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                    
+
 
 
                 }
@@ -298,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void releaseMediaPlayer() {
+    private void releaseMediaPlayer(MediaPlayer mediaPlayer) {
         // If the media player is not null, then it may be currently playing a sound.
         if (mediaPlayer != null) {
             // Regardless of the current state of the media player, release its resources
@@ -328,7 +349,10 @@ public class MainActivity extends AppCompatActivity {
                             elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
 
                         }
-                    });}
+                    });
+
+
+                }
 
                 }catch (InterruptedException e){
                     e.printStackTrace();
@@ -337,5 +361,10 @@ public class MainActivity extends AppCompatActivity {
         };
         updateThread.start();
 
+    }
+    private void resetSeekbar(){
+        seekBar.setProgress(0);
+        elapsedTimeTextView.setText("00:00");
+        durationTextView.setText("00:00");
     }
 }
