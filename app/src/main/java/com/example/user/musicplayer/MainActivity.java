@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Button prevPlayButton,prevStopButton;
     private TextView elapsedTimeTextView,durationTextView;
     private Handler handler;
-    private int trial=0;
+    private int trial=0,pasueListner=0;
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
     int minutes=0,seconds=0;
@@ -88,9 +88,11 @@ public class MainActivity extends AppCompatActivity {
                         // are finished
                         // If you implement ducking and lower the volume, be
                         // sure to return it to normal here, as well.
-                        mediaPlayer.start();
-                        prevStopButton.setVisibility(View.VISIBLE);
-                        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                        if(pasueListner==0) {
+                            mediaPlayer.start();
+                            prevStopButton.setVisibility(View.VISIBLE);
+                            prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                            }
                         if(trial==1)
                         {
                             mAudioManager.adjustVolume(AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
@@ -151,13 +153,16 @@ public class MainActivity extends AppCompatActivity {
                     {
                         if(mediaPlayer.isPlaying()){
                     mediaPlayer.pause();
+                            pasueListner=1;
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                    } else {
+                    }
+                    else {
                             int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                             if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                                 return;
-                    mediaPlayer.start();
-                            updateThread();
+                     mediaPlayer.start();
+                     pasueListner=0;
+                           updateThread();
                             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
@@ -188,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     duration=mediaPlayer.getDuration();
                     durationTextView.setText(timeConvertor((int) duration));
                     mediaPlayer.start();
+                    pasueListner=0;
                     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
@@ -198,11 +204,11 @@ public class MainActivity extends AppCompatActivity {
                             b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                         }
                     });
-                    updateThread();
+                    //TODO updtae thread .....:-)
+                    //updateThread();
                     seekBar.setMax(mediaPlayer.getDuration());
 
                     sb.setVisibility(View.VISIBLE);
-                    //durationTextView.setText(mediaPlayer.getDuration());
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
 
 
@@ -222,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser){
                     mediaPlayer.seekTo(progress);
-
                     elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
                 }
             }
@@ -332,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mediaPlayer= null;
-           // mAudioManager.abandonAudioFocus(afChangeListener);
+            mAudioManager.abandonAudioFocus(afChangeListener);
 
         }
     }
