@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                 updateThread.interrupt();
+                resetSeekbar();
 
             }
 
