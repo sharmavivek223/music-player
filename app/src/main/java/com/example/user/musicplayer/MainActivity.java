@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                 //updateThread.interrupt();
-                resetSeekbar();
+               // resetSeekbar();
 
             }
 
@@ -350,10 +350,11 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer= null;
             mAudioManager.abandonAudioFocus(afChangeListener);
             //handler.removeCallbacks(r);
-           // handler.removeCallbacks(runnable);
+           handler.removeCallbacks(runnable);
 
         }
     }
+    /*
     public void updateThread(){
         updateThread=new Thread(){
             @Override
@@ -386,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
         updateThread.start();
 
     }
+    */
     private void resetSeekbar(){
         seekBar.setProgress(0);
         elapsedTimeTextView.setText("00:00");
