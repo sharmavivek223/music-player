@@ -145,27 +145,38 @@ public class MainActivity extends AppCompatActivity {
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                 //updateThread.interrupt();
                // resetSeekbar();
-
             }
 
             @Override
             public void onPlayClick(final Button b, final Button sb, View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
-                if(prevPosition==position)
+        if(prevPosition==position)
                     {
-                        if(mediaPlayer.isPlaying()){
+                if(mediaPlayer.isPlaying()){
                     mediaPlayer.pause();
                             pasueListner=1;
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     }
-                    else {
-                            int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
+                else {
+
+                    if(mediaPlayer==null)
+                    {
+                        //TODO Edit here to remove stop button error
+
+                        releaseMediaPlayer(mediaPlayer);
+                        mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+                        seekBar.setProgress(0);
+                        seekBar.setMax(mediaPlayer.getDuration());
+                        //seekBar.setMax(mediaPlayer.getDuration());
+                    }
+
+                    int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                             if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                                 return;
 
                      mediaPlayer.start();
-                            playCycle();
+                    playCycle();
                      pasueListner=0;
                           // updateThread();
 
@@ -183,11 +194,9 @@ public class MainActivity extends AppCompatActivity {
                      b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     }
                      }
-
-
-                  else
+        else
                 {
-                    if(prevPosition!=-1){
+                if(prevPosition!=-1){
                     prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     prevStopButton.setVisibility(View.GONE);
                     }
@@ -214,10 +223,7 @@ public class MainActivity extends AppCompatActivity {
                             b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                         }
                     });
-                    //TODO updtae thread .....:-)
                     //updateThread();
-
-
 
                     sb.setVisibility(View.VISIBLE);
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
@@ -395,12 +401,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void playCycle(){
-seekBar.setProgress(mediaPlayer.getCurrentPosition());
-String converted=timeConvertor(mediaPlayer.getCurrentPosition());
-elapsedTimeTextView.setText(converted);
-if(mediaPlayer.isPlaying())
-{
-    runnable=new Runnable() {
+        seekBar.setProgress(mediaPlayer.getCurrentPosition());
+        String converted=timeConvertor(mediaPlayer.getCurrentPosition());
+        elapsedTimeTextView.setText(converted);
+        if(mediaPlayer.isPlaying())
+        {
+        runnable=new Runnable() {
         @Override
         public void run() {
             playCycle();
