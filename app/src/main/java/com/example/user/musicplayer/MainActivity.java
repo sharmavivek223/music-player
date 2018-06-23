@@ -39,12 +39,14 @@ public class MainActivity extends AppCompatActivity {
     private int prevPosition=-1;
     private Button prevPlayButton,prevStopButton;
     private TextView elapsedTimeTextView,durationTextView;
-    private Handler handler;
+    //private Handler handler;
     private int trial=0,pasueListner=0;
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
     int minutes=0,seconds=0;
     private Thread updateThread;
+    Handler handler;
+    Runnable runnable;
 
 
     AudioManager.OnAudioFocusChangeListener afChangeListener =
@@ -127,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(songAdapter);
         recyclerView.addItemDecoration(dividerItemDecoration);
+        handler=new Handler();
 
 
         CheckPermission();
@@ -140,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                // mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                updateThread.interrupt();
+                //updateThread.interrupt();
                 resetSeekbar();
 
             }
@@ -160,13 +163,16 @@ public class MainActivity extends AppCompatActivity {
                             int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                             if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                                 return;
+
                      mediaPlayer.start();
+                            playCycle();
                      pasueListner=0;
-                           updateThread();
+                          // updateThread();
+
                             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
-                                    updateThread.interrupt();
+                                   // updateThread.interrupt();
                                     releaseMediaPlayer(mp);
                                     seekBar.setProgress(0);
                                     sb.setVisibility(View.GONE);
@@ -192,12 +198,16 @@ public class MainActivity extends AppCompatActivity {
                     mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
                     duration=mediaPlayer.getDuration();
                     durationTextView.setText(timeConvertor((int) duration));
+                    seekBar.setMax(mediaPlayer.getDuration());
+
                     mediaPlayer.start();
+                    playCycle();
                     pasueListner=0;
                     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            updateThread.interrupt();
+                           // updateThread.interrupt();
+
                             releaseMediaPlayer(mp);
                             resetSeekbar();
                             sb.setVisibility(View.GONE);
@@ -206,7 +216,8 @@ public class MainActivity extends AppCompatActivity {
                     });
                     //TODO updtae thread .....:-)
                     //updateThread();
-                    seekBar.setMax(mediaPlayer.getDuration());
+
+
 
                     sb.setVisibility(View.VISIBLE);
                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
@@ -338,6 +349,8 @@ public class MainActivity extends AppCompatActivity {
             // is not configured to play an audio file at the moment.
             mediaPlayer= null;
             mAudioManager.abandonAudioFocus(afChangeListener);
+            //handler.removeCallbacks(r);
+           // handler.removeCallbacks(runnable);
 
         }
     }
@@ -349,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
                     Thread.sleep(50);
                     runOnUiThread(new Runnable() {
                         @Override
+
                         public void run() {//set up seekbar after every 50 milli secs
                             seekBar.setMax(mediaPlayer.getDuration());
                             seekBar.setProgress(mediaPlayer.getCurrentPosition());
@@ -356,16 +370,19 @@ public class MainActivity extends AppCompatActivity {
                             elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
 
                         }
+
+
                     });
 
 
                 }
-
                 }catch (InterruptedException e){
                     e.printStackTrace();
                 }
+
             }
         };
+
         updateThread.start();
 
     }
@@ -374,4 +391,23 @@ public class MainActivity extends AppCompatActivity {
         elapsedTimeTextView.setText("00:00");
         durationTextView.setText("00:00");
     }
+
+    public void playCycle(){
+seekBar.setProgress(mediaPlayer.getCurrentPosition());
+String converted=timeConvertor(mediaPlayer.getCurrentPosition());
+elapsedTimeTextView.setText(converted);
+if(mediaPlayer.isPlaying())
+{
+    runnable=new Runnable() {
+        @Override
+        public void run() {
+            playCycle();
+        }
+    };
+    handler.postDelayed(runnable,100);
+}
+
+    }
+
+
 }
