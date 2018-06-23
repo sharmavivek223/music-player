@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                             if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                                 return;
-
+  
                      mediaPlayer.start();
                     playCycle();
                      pasueListner=0;
