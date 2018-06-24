@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         // Remember to unregister your controls/buttons here.
                         // And release the kra — Audio Focus!
                         // You’re done.
-                        releaseMediaPlayer(mediaPlayer);
+                        releaseMediaPlayer();
                         prevStopButton.setVisibility(View.GONE);
                         prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     } else if (focusChange ==
@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         // sure to return it to normal here, as well.
                         if(pasueListner==0) {
                             mediaPlayer.start();
+                            playCycle();
                             prevStopButton.setVisibility(View.VISIBLE);
                             prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                             }
@@ -139,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
 
-                releaseMediaPlayer(mediaPlayer);
-               // mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+                releaseMediaPlayer();
+
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                 //updateThread.interrupt();
@@ -148,33 +149,26 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPlayClick(final Button b, final Button sb, View v, final SongInfo obj, int position){
+            public void onPlayClick(final Button b, final Button sb, final View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
         if(prevPosition==position)
-                    {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.pause();
-                            pasueListner=1;
-                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                    }
+        {
+                        if(mediaPlayer==null)
+                            mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+                pasueListner=1;
+                b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+            }
                 else {
 
-                    if(mediaPlayer==null)
-                    {
-                        //TODO Edit here to remove stop button error
-
-                        releaseMediaPlayer(mediaPlayer);
-                        mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
-                        seekBar.setProgress(0);
-                        seekBar.setMax(mediaPlayer.getDuration());
-                        //seekBar.setMax(mediaPlayer.getDuration());
-                    }
 
                     int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                             if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                                 return;
-  
+
                      mediaPlayer.start();
                     playCycle();
                      pasueListner=0;
@@ -184,11 +178,12 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                    // updateThread.interrupt();
-                                    releaseMediaPlayer(mp);
+                                    releaseMediaPlayer();
                                     seekBar.setProgress(0);
+
                                     sb.setVisibility(View.GONE);
                                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-
+                                    onPlayClick(prevPlayButton,prevStopButton,v,obj,++prevPosition);
                                 }
                             });
                      b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
@@ -200,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     prevStopButton.setVisibility(View.GONE);
                     }
-                    releaseMediaPlayer(mediaPlayer);
+                    releaseMediaPlayer();
                     int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
                     if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         return;
@@ -217,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onCompletion(MediaPlayer mp) {
                            // updateThread.interrupt();
 
-                            releaseMediaPlayer(mp);
+                            releaseMediaPlayer();
                             resetSeekbar();
                             sb.setVisibility(View.GONE);
                             b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
@@ -343,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void releaseMediaPlayer(MediaPlayer mediaPlayer) {
+    private void releaseMediaPlayer() {
         // If the media player is not null, then it may be currently playing a sound.
         if (mediaPlayer != null) {
             // Regardless of the current state of the media player, release its resources
@@ -416,6 +411,14 @@ public class MainActivity extends AppCompatActivity {
 }
 
     }
+
+public void playNextSong()
+{
+    //TODO ADD CODE HERE TO PLAY NEXT SONG AUTOMATICALLY WHEN PREVOIUS SONG IS COMPLETED
+
+}
+
+
 
 
 }
