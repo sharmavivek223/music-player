@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         CheckPermission();
 
 
+
         songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
             @Override
             public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                 //updateThread.interrupt();
-               // resetSeekbar();
+                resetSeekbar();
             }
 
             @Override
@@ -154,8 +156,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(prevPosition==position)
         {
-                        if(mediaPlayer==null)
-                            mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+            if(mediaPlayer==null)
+                mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
 
             if(mediaPlayer.isPlaying()){
                 mediaPlayer.pause();
@@ -183,7 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
                                     sb.setVisibility(View.GONE);
                                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                                    onPlayClick(prevPlayButton,prevStopButton,v,obj,++prevPosition);
+                                    playNextSong();
+                                    //onPlayClick(prevPlayButton,prevStopButton,v,obj,++prevPosition);
                                 }
                             });
                      b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
@@ -216,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                             resetSeekbar();
                             sb.setVisibility(View.GONE);
                             b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                            playNextSong();
                         }
                     });
                     //updateThread();
@@ -239,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(fromUser){
+                    if(mediaPlayer==null)
+                        return;
                     mediaPlayer.seekTo(progress);
                     elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
                 }
@@ -355,40 +361,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-    /*
-    public void updateThread(){
-        updateThread=new Thread(){
-            @Override
-            public void run() {
-                try {while(mediaPlayer.isPlaying()&&mediaPlayer!=null){
-                    Thread.sleep(50);
-                    runOnUiThread(new Runnable() {
-                        @Override
-
-                        public void run() {//set up seekbar after every 50 milli secs
-                            seekBar.setMax(mediaPlayer.getDuration());
-                            seekBar.setProgress(mediaPlayer.getCurrentPosition());
-                            //updating duration text
-                            elapsedTimeTextView.setText(timeConvertor(mediaPlayer.getCurrentPosition()));
-
-                        }
-
-
-                    });
-
-
-                }
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-
-            }
-        };
-
-        updateThread.start();
-
-    }
-    */
     private void resetSeekbar(){
         seekBar.setProgress(0);
         elapsedTimeTextView.setText("00:00");
@@ -415,6 +387,8 @@ public class MainActivity extends AppCompatActivity {
 public void playNextSong()
 {
     //TODO ADD CODE HERE TO PLAY NEXT SONG AUTOMATICALLY WHEN PREVOIUS SONG IS COMPLETED
+
+    recyclerView.findViewHolderForAdapterPosition(prevPosition + 1).itemView.performClick();
 
 }
 

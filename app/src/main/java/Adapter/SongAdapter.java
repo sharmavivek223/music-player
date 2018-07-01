@@ -47,6 +47,18 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
         holder.songName.setText(sinfo.songName);
         holder.artistName.setText(sinfo.artistName);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(onItemClickListner !=null){
+
+                    onItemClickListner.onPlayClick(holder.actionBtn,holder.stopBtn,view,sinfo, (int) getItemId(position));
+
+                }
+            }
+        });
+
+
         holder.actionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
