@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void CheckPermission() {
         //since only in sdk greater than 23 the permissions are granted after installing app
-        //so we hsve to only ask for permission when the android version is greater or equal to marshmallow
+        //so we have to only ask for permission when the android version is greater or equal to marshmallow
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
 
@@ -285,7 +285,8 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }LoadSongs();
 
-        }else{//if everything went great we are happy to load songs
+        }else{//if it is less than marshmallow the permissions would be grantd at installation
+            //so we will straight away load songs
             LoadSongs();
         }
     }

@@ -10,7 +10,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         >
 
@@ -53,20 +53,80 @@
                 android:gravity="right"
                 android:text="00:00"
                 android:textColor="@color/colorAccent" />
+
         </LinearLayout>
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="5dp">
 
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
-        </LinearLayout>
+            <ImageButton
+                android:id="@+id/imageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/repeat_off" />
+
+            <TableRow
+                android:id="@+id/tableRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/shuffle"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toBottomOf="parent">
+
+                <ImageButton
+                    android:id="@+id/prev_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+
+                    android:src="@android:drawable/ic_media_previous" />
+
+                <ImageButton
+                    android:id="@+id/play_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@android:drawable/ic_media_play" />
+
+                <ImageButton
+                    android:id="@+id/next_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@android:drawable/ic_media_next" />
+            </TableRow>
+
+            <ImageButton
+                android:id="@+id/shuffle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/shuffle_off" />
+
+        </android.support.constraint.ConstraintLayout>
 
 
     </LinearLayout>
+
 </LinearLayout>
