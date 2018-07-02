@@ -20,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private Button prevPlayButton,prevStopButton;
     private TextView elapsedTimeTextView,durationTextView;
     //private Handler handler;
+    private ImageButton playButton;
     private int trial=0;
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
@@ -134,8 +136,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(songAdapter);
         recyclerView.addItemDecoration(dividerItemDecoration);
         handler=new Handler();
-
-
+        playButton=(ImageButton)findViewById(R.id.play_button);
         CheckPermission();
 
 
@@ -148,8 +149,9 @@ public class MainActivity extends AppCompatActivity {
 
                 sb.setVisibility(View.GONE);
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                //updateThread.interrupt();
                 resetSeekbar();
+                prevPosition=-1;
+                playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
             }
 
             @Override
@@ -175,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
                      mediaPlayer.start();
                     playCycle();
+                playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                      isPaused=false;
                           // updateThread();
 
@@ -194,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                      b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     }
                      }
+
         else
                 {
                 if(prevPosition!=-1){
@@ -211,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mediaPlayer.start();
                     playCycle();
+                    playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                     isPaused=false;
                     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
@@ -397,6 +402,27 @@ if(prevPosition<size-1)
     recyclerView.findViewHolderForAdapterPosition(prevPosition + 1).itemView.performClick();
 else
     recyclerView.findViewHolderForAdapterPosition(0).itemView.performClick();
+
+
+}
+
+public void pauseMediaPlayer(View view)
+{
+    if(mediaPlayer!=null) {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+            playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+
+        } else {
+
+            mediaPlayer.start();
+            playCycle();
+            prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+            playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+
+        }
+    }
 
 
 }
