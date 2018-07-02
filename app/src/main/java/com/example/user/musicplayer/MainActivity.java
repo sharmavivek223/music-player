@@ -41,9 +41,11 @@ public class MainActivity extends AppCompatActivity {
     private Button prevPlayButton,prevStopButton;
     private TextView elapsedTimeTextView,durationTextView;
     //private Handler handler;
-    private int trial=0,pasueListner=0;
+    private int trial=0;
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
+    int size;
+    boolean isPaused=false;
     int minutes=0,seconds=0;
     private Thread updateThread;
     Handler handler;
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                         // are finished
                         // If you implement ducking and lower the volume, be
                         // sure to return it to normal here, as well.
-                        if(pasueListner==0) {
+                        if(isPaused==false) {
                             mediaPlayer.start();
                             playCycle();
                             prevStopButton.setVisibility(View.VISIBLE);
@@ -161,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(mediaPlayer.isPlaying()){
                 mediaPlayer.pause();
-                pasueListner=1;
+                isPaused=true;
                 b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
             }
                 else {
@@ -173,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
                      mediaPlayer.start();
                     playCycle();
-                     pasueListner=0;
+                     isPaused=false;
                           // updateThread();
 
                             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -209,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mediaPlayer.start();
                     playCycle();
-                    pasueListner=0;
+                    isPaused=false;
                     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
@@ -313,6 +315,8 @@ public class MainActivity extends AppCompatActivity {
                 String artist=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                 String url=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                 //passing the info to song info object
+                   if(artist.equalsIgnoreCase("Your recordings"))
+                       continue;
                 SongInfo sinfo=new SongInfo(name,artist,url);
                 songsArray.add(sinfo);
 
@@ -327,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(songAdapter);
             recyclerView.setItemViewCacheSize(songAdapter.getItemCount());
             recyclerView.addItemDecoration(dividerItemDecoration);
-
+            size=songsArray.size();
         }
     }
 
@@ -389,7 +393,11 @@ public void playNextSong()
 {
     //TODO ADD CODE HERE TO PLAY NEXT SONG AUTOMATICALLY WHEN PREVOIUS SONG IS COMPLETED
 
+if(prevPosition<size-1)
     recyclerView.findViewHolderForAdapterPosition(prevPosition + 1).itemView.performClick();
+else
+    recyclerView.findViewHolderForAdapterPosition(0).itemView.performClick();
+
 
 }
 
