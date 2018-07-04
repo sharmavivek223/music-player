@@ -159,84 +159,14 @@ public class MainActivity extends AppCompatActivity {
                //code for play buttons goes here
 
         if(prevPosition==position)
-        {
-            if(mediaPlayer==null)
-                mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+            pauseMediaPlayer(v);
 
-            if(mediaPlayer.isPlaying()){
-                mediaPlayer.pause();
-                isPaused=true;
-                b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-            }
-                else {
-
-
-                    int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
-                            if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
-                                return;
-
-                     mediaPlayer.start();
-                    playCycle();
-                playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                     isPaused=false;
-                          // updateThread();
-
-                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                   // updateThread.interrupt();
-                                    releaseMediaPlayer();
-                                    seekBar.setProgress(0);
-
-                                    sb.setVisibility(View.GONE);
-                                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                                    playNextSong();
-                                    //onPlayClick(prevPlayButton,prevStopButton,v,obj,++prevPosition);
-                                }
-                            });
-                     b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                    }
-                     }
 
         else
-                {
-                if(prevPosition!=-1){
-                    prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                    prevStopButton.setVisibility(View.GONE);
-                    }
-                    releaseMediaPlayer();
-                    int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
-                    if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
-                        return;
-                    mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
-                    duration=mediaPlayer.getDuration();
-                    durationTextView.setText(timeConvertor((int) duration));
-                    seekBar.setMax(mediaPlayer.getDuration());
-
-                    mediaPlayer.start();
-                    playCycle();
-                    playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                    isPaused=false;
-                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                           // updateThread.interrupt();
-
-                            releaseMediaPlayer();
-                            resetSeekbar();
-                            sb.setVisibility(View.GONE);
-                            b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
-                            playNextSong();
-                        }
-                    });
-                    //updateThread();
-
-                    sb.setVisibility(View.VISIBLE);
-                    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+            playNewSong(position,obj,b,sb,v);
 
 
 
-                }
                 //im setting it visible here cause after a stop button press it will not be visible again on play button click
                 sb.setVisibility(View.VISIBLE);
                 prevPosition=position;
@@ -402,6 +332,45 @@ if(prevPosition<size-1)
     recyclerView.findViewHolderForAdapterPosition(prevPosition + 1).itemView.performClick();
 else
     recyclerView.findViewHolderForAdapterPosition(0).itemView.performClick();
+
+
+}
+public void playNewSong(int position, SongInfo obj,final Button b, final Button sb, View v)
+{
+    if(prevPosition!=-1){
+        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+        prevStopButton.setVisibility(View.GONE);
+    }
+    releaseMediaPlayer();
+    int result=mAudioManager.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
+    if(result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+        return;
+    mediaPlayer=MediaPlayer.create(MainActivity.this, Uri.parse(obj.getSongUrl()));
+    duration=mediaPlayer.getDuration();
+    durationTextView.setText(timeConvertor((int) duration));
+    seekBar.setMax(mediaPlayer.getDuration());
+
+    mediaPlayer.start();
+    playCycle();
+    playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+    isPaused=false;
+    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            // updateThread.interrupt();
+
+            releaseMediaPlayer();
+            resetSeekbar();
+            sb.setVisibility(View.GONE);
+            b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+            playNextSong();
+        }
+    });
+    //updateThread();
+
+    sb.setVisibility(View.VISIBLE);
+    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+
 
 
 }
