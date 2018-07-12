@@ -37,13 +37,10 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/StopBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:drawable/checkbox_off_background"
-            android:visibility="gone" />
-
+        <ImageView
+            android:id="@+id/currentSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 </android.support.v7.widget.CardView>
