@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                         // temporarily stolen, but will be back soon.
                         // i.e. for a phone call
                         mediaPlayer.pause();
-                        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                        //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                         // Stop playback, because you lost the Audio Focus.
                         // i.e. the user started some other playback app
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         // You’re done.
                         releaseMediaPlayer();
                         prevStopButton.setVisibility(View.GONE);
-                        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                        //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                     } else if (focusChange ==
                             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
                         // Lower the volume, because something else is also
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                             mediaPlayer.start();
                             playCycle();
                             prevStopButton.setVisibility(View.VISIBLE);
-                            prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                            //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                             }
                         if(trial==1)
                         {
@@ -142,20 +142,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
+
+
+
+
             @Override
-            public void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) {
+            public void onStopClick( Button sb, View v, SongInfo obj, int position) {
 
                 releaseMediaPlayer();
 
                 sb.setVisibility(View.GONE);
-                b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
                 resetSeekbar();
                 prevPosition=-1;
                 playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
             }
 
             @Override
-            public void onPlayClick(final Button b, final Button sb, final View v, final SongInfo obj, int position){
+            public void onPlayClick(final Button sb, final View v, final SongInfo obj, int position){
                //code for play buttons goes here
 
         if(prevPosition==position)
@@ -163,14 +166,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         else
-            playNewSong(position,obj,b,sb,v);
+            playNewSong(position,obj,sb,v);
 
 
 
                 //im setting it visible here cause after a stop button press it will not be visible again on play button click
                 sb.setVisibility(View.VISIBLE);
                 prevPosition=position;
-                prevPlayButton=b;
                 prevStopButton=sb;
 
             }
@@ -335,10 +337,10 @@ else
 
 
 }
-public void playNewSong(int position, SongInfo obj,final Button b, final Button sb, View v)
+public void playNewSong(int position, SongInfo obj,final Button sb, View v)
 {
     if(prevPosition!=-1){
-        prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+        //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
         prevStopButton.setVisibility(View.GONE);
     }
     releaseMediaPlayer();
@@ -362,14 +364,12 @@ public void playNewSong(int position, SongInfo obj,final Button b, final Button 
             releaseMediaPlayer();
             resetSeekbar();
             sb.setVisibility(View.GONE);
-            b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
             playNextSong();
         }
     });
     //updateThread();
 
     sb.setVisibility(View.VISIBLE);
-    b.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
 
 
 
@@ -380,14 +380,14 @@ public void pauseMediaPlayer(View view)
     if(mediaPlayer!=null) {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-            prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+            //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
             playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
 
         } else {
 
             mediaPlayer.start();
             playCycle();
-            prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
+           // prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
             playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
 
         }

@@ -27,8 +27,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongHolder> {
     //TODO add another button click listener for stop button
     OnItemClickListner onItemClickListner;
     public interface OnItemClickListner{
-        void onPlayClick(Button b, Button sb, View v, SongInfo obj, int position) ;
-        void onStopClick(Button b, Button sb, View v, SongInfo obj, int position) ;
+        void onPlayClick( Button sb, View v, SongInfo obj, int position) ;
+        void onStopClick( Button sb, View v, SongInfo obj, int position) ;
     }
 public void setOnItemClickListner(OnItemClickListner onItemClickListner){
         this.onItemClickListner=onItemClickListner;
@@ -52,13 +52,13 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
             public void onClick(View view) {
                 if(onItemClickListner !=null){
 
-                    onItemClickListner.onPlayClick(holder.actionBtn,holder.stopBtn,view,sinfo, (int) getItemId(position));
+                    onItemClickListner.onPlayClick(holder.stopBtn,view,sinfo, (int) getItemId(position));
 
                 }
             }
         });
 
-
+/*
         holder.actionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,13 +69,13 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
                 }
             }
         });
-
+*/
         holder.stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(onItemClickListner !=null){
 
-                    onItemClickListner.onStopClick(holder.actionBtn,holder.stopBtn,v,sinfo, (int) getItemId(position));
+                    onItemClickListner.onStopClick(holder.stopBtn,v,sinfo, (int) getItemId(position));
 
                 }
             }
@@ -96,13 +96,13 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
 
     public class SongHolder extends RecyclerView.ViewHolder {
         TextView songName,artistName;
-        Button actionBtn;
+        //Button actionBtn;
         Button stopBtn;
         public SongHolder(View itemView) {
             super(itemView);
             songName=(TextView)itemView.findViewById(R.id.SongName);
             artistName=(TextView)itemView.findViewById(R.id.ArtistName);
-            actionBtn=(Button) itemView.findViewById(R.id.ActionBtn);
+            //actionBtn=(Button) itemView.findViewById(R.id.ActionBtn);
             stopBtn=(Button)itemView.findViewById(R.id.StopBtn);
         }
     }
