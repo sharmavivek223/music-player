@@ -53,7 +53,7 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
             public void onClick(View view) {
                 if(onItemClickListner !=null){
 
-                    onItemClickListner.onPlayClick(holder.currentSong,view,sinfo, (int) getItemId(position));
+                    onItemClickListner.onPlayClick(holder.playImage,view,sinfo, (int) getItemId(position));
 
                 }
             }
@@ -98,14 +98,14 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
         TextView songName,artistName;
         //Button actionBtn;
         Button stopBtn;
-        ImageView currentSong;
+        ImageView playImage;
         public SongHolder(View itemView) {
             super(itemView);
             songName=(TextView)itemView.findViewById(R.id.SongName);
             artistName=(TextView)itemView.findViewById(R.id.ArtistName);
             //actionBtn=(Button) itemView.findViewById(R.id.ActionBtn);
             //stopBtn=(Button)itemView.findViewById(R.id.StopBtn);
-            currentSong=(ImageView)itemView.findViewById(R.id.currentSong);
+            playImage=(ImageView)itemView.findViewById(R.id.playImage);
 
         }
     }
