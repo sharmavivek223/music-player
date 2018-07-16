@@ -25,6 +25,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongHolder> {
         this.context = context;
         setHasStableIds(true);
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     //TODO add another button click listener for stop button
     OnItemClickListner onItemClickListner;
     public interface OnItemClickListner{
