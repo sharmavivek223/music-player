@@ -1,6 +1,7 @@
 package Adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongHolder> {
     //TODO add another button click listener for stop button
     OnItemClickListner onItemClickListner;
     public interface OnItemClickListner{
-        void onPlayClick(ImageView iv, View v, SongInfo obj, int position) ;
+        void onPlayClick( View v, SongInfo obj, int position,int index) ;
         //void onStopClick( Button sb, View v, SongInfo obj, int position) ;
     }
 public void setOnItemClickListner(OnItemClickListner onItemClickListner){
@@ -45,21 +46,26 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
     public SongHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(context).inflate(R.layout.list_row,parent,false);
         return new SongHolder(view);
+
     }
     //to perform action on any objects in any view
     @Override
     public void onBindViewHolder(final SongHolder holder, final int position) {
 
         final SongInfo sinfo=_songs.get((int) getItemId(position));
+        final int index=_songs.indexOf(sinfo);
         holder.songName.setText(sinfo.songName);
         holder.artistName.setText(sinfo.artistName);
+        holder.playImage.setImageDrawable(sinfo.getImageResource());
+
+
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(onItemClickListner !=null){
 
-                    onItemClickListner.onPlayClick(holder.playImage,view,sinfo, (int) getItemId(position));
+                    onItemClickListner.onPlayClick(view,sinfo, (int) getItemId(position),index);
 
                 }
             }
