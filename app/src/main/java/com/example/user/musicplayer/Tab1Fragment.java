@@ -106,7 +106,7 @@ public class Tab1Fragment extends Fragment{
                         // are finished
                         // If you implement ducking and lower the volume, be
                         // sure to return it to normal here, as well.
-                        if(isPaused==false) {
+                        if(!isPaused) {
                             mediaPlayer.start();
                             playCycle();
                             //prevStopButton.setVisibility(View.VISIBLE);
@@ -176,14 +176,18 @@ prevButton.setOnClickListener(new View.OnClickListener() {
             songsArray.get(currentPosition).setImageResource(null);
             songAdapter.notifyDataSetChanged();
             prevPosition=currentPosition;
+            //changing song if its not the first element
             if(currentPosition!=1)
-            playNextSong(currentPosition-2);
+                playNextSong(currentPosition-2);
             else
                 playNewSong(songsArray.get(0),0);
             //songAdapter.notifyItemChanged(songsArray.get(0).);
         }
 
-        else {//todo add toasting message for no prev song available
+        else {//play the last song if the current song is first one.
+            songsArray.get(currentPosition).setImageResource(null);
+            songAdapter.notifyDataSetChanged();
+            playNewSong(songsArray.get(songsArray.size()-1),songsArray.size()-1);
             }
     }
 });
