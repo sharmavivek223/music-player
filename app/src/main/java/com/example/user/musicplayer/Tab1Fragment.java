@@ -171,12 +171,15 @@ nextButton.setOnClickListener(new View.OnClickListener() {
 prevButton.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
-        if(currentPosition>1)
+        if(currentPosition>=1)
         {
             songsArray.get(currentPosition).setImageResource(null);
             songAdapter.notifyDataSetChanged();
             prevPosition=currentPosition;
+            if(currentPosition!=1)
             playNextSong(currentPosition-2);
+            else
+                playNewSong(songsArray.get(0),0);
             //songAdapter.notifyItemChanged(songsArray.get(0).);
         }
 
@@ -250,11 +253,10 @@ prevButton.setOnClickListener(new View.OnClickListener() {
         //so we have to only ask for permission when the android version is greater or equal to marshmallow
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-
-
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},REQ_CODE);
                 return;
-            }LoadSongs();
+            }
+            LoadSongs();
 
         }else{//if it is less than marshmallow the permissions would be grantd at installation
             //so we will straight away load songs
@@ -442,6 +444,8 @@ prevButton.setOnClickListener(new View.OnClickListener() {
 
 
             }
+        }else{
+            playNewSong(songsArray.get(0),0);
         }
 
 
