@@ -189,7 +189,8 @@ prevButton.setOnClickListener(new View.OnClickListener() {
 
         }
 
-        else {//play the last song if the current song is first one.
+        else {
+            //play the last song if the current song is first one.
             songsArray.get(currentPosition).setImageResource(null);
             //songAdapter.notifyDataSetChanged();
             songAdapter.notifyItemChanged(currentPosition);
