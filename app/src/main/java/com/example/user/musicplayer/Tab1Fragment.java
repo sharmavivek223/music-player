@@ -68,12 +68,16 @@ public class Tab1Fragment extends Fragment{
     AudioManager.OnAudioFocusChangeListener afChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
+                    if(mediaPlayer.isPlaying()==false)
+                        return;
                     if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                         // Pause playback because your Audio Focus was
                         // temporarily stolen, but will be back soon.
                         // i.e. for a phone call
-                        mediaPlayer.pause();
+                        pauseMediaPlayer();
                         //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    } else if(focusChange==AudioManager.AUDIOFOCUS_GAIN_TRANSIENT){
+                        pauseMediaPlayer();
                     } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                         // Stop playback, because you lost the Audio Focus.
                         // i.e. the user started some other playback app
@@ -98,7 +102,6 @@ public class Tab1Fragment extends Fragment{
                         trial=1;
 
                     } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN ||
-                            focusChange==AudioManager.AUDIOFOCUS_GAIN_TRANSIENT ||
                             focusChange==AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE) {
                         // Resume playback, because you hold the Audio Focus
                         // again!
@@ -107,8 +110,7 @@ public class Tab1Fragment extends Fragment{
                         // If you implement ducking and lower the volume, be
                         // sure to return it to normal here, as well.
                         if(!isPaused) {
-                            mediaPlayer.start();
-                            playCycle();
+                           mediaPlayer.start();
                             //prevStopButton.setVisibility(View.VISIBLE);
                             //prevPlayButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_pause));
                         }
@@ -156,14 +158,15 @@ public class Tab1Fragment extends Fragment{
 playButton.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
-        pauseMediaPlayer(v);
+        pauseMediaPlayer();
     }
 });
 nextButton.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
         songsArray.get(currentPosition).setImageResource(null);
-        songAdapter.notifyDataSetChanged();
+        //songAdapter.notifyDataSetChanged();
+        songAdapter.notifyItemChanged(currentPosition);
         prevPosition=currentPosition;
         playNextSong(currentPosition);
     }
@@ -174,19 +177,22 @@ prevButton.setOnClickListener(new View.OnClickListener() {
         if(currentPosition>=1)
         {
             songsArray.get(currentPosition).setImageResource(null);
-            songAdapter.notifyDataSetChanged();
+            songAdapter.notifyItemChanged(currentPosition);
             prevPosition=currentPosition;
             //changing song if its not the first element
             if(currentPosition!=1)
                 playNextSong(currentPosition-2);
             else
                 playNewSong(songsArray.get(0),0);
-            //songAdapter.notifyItemChanged(songsArray.get(0).);
+
+
+
         }
 
         else {//play the last song if the current song is first one.
             songsArray.get(currentPosition).setImageResource(null);
-            songAdapter.notifyDataSetChanged();
+            //songAdapter.notifyDataSetChanged();
+            songAdapter.notifyItemChanged(currentPosition);
             playNewSong(songsArray.get(songsArray.size()-1),songsArray.size()-1);
             }
     }
@@ -202,10 +208,9 @@ prevButton.setOnClickListener(new View.OnClickListener() {
                 //code for play buttons goes here
                 prevPosition=currentPosition;
 
-
                 if(prevPosition==index)
                 {
-                    pauseMediaPlayer(v);
+                    pauseMediaPlayer();
                 }
 
                 else
@@ -365,7 +370,6 @@ prevButton.setOnClickListener(new View.OnClickListener() {
 
     public void playCycle(){
 
-
       seekBar.setProgress(mediaPlayer.getCurrentPosition());
         String converted=timeConvertor(mediaPlayer.getCurrentPosition());
         elapsedTimeTextView.setText(converted);
@@ -388,10 +392,9 @@ prevButton.setOnClickListener(new View.OnClickListener() {
         //prevPosition=index;
 
         songsArray.get(index).setImageResource(null);
+        songAdapter.notifyItemChanged(index);
 
-        songAdapter.notifyDataSetChanged();
-
-        if(prevPosition<size-1)
+        if(prevPosition<size-2)
            newIndex=index+1;
 
         playNewSong(songsArray.get(newIndex),newIndex);
@@ -411,7 +414,8 @@ prevButton.setOnClickListener(new View.OnClickListener() {
         durationTextView.setText(timeConvertor((int) duration));
         seekBar.setMax(mediaPlayer.getDuration());
         obj.setImageResource(getResources().getDrawable(android.R.drawable.ic_lock_silent_mode_off));
-        songAdapter.notifyDataSetChanged();
+        //songAdapter.notifyDataSetChanged();
+        songAdapter.notifyItemChanged(index);
         prevPosition=currentPosition;
         currentPosition=index;
         mediaPlayer.start();
@@ -432,12 +436,13 @@ prevButton.setOnClickListener(new View.OnClickListener() {
 
     }
 
-    public void pauseMediaPlayer(View view)
+    public void pauseMediaPlayer()
     {
         if(mediaPlayer!=null) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
                 playButton.setBackground(getResources().getDrawable(android.R.drawable.ic_media_play));
+
 
 
             } else {
