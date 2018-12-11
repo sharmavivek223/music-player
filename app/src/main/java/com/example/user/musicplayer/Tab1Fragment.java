@@ -38,24 +38,24 @@ import Adapter.SongAdapter.SongHolder;
 
 public class Tab1Fragment extends Fragment{
     private static final String TAG = "Tab1Fragment";
-    public MediaPlayer mediaPlayer;
-    private SeekBar seekBar;
-    private RecyclerView recyclerView;
-    private SongAdapter songAdapter;
-    private AudioManager mAudioManager;
-    private ArrayList<SongInfo> songsArray;
-    private  final int REQ_CODE=123;
-    private int prevPosition=-1,currentPosition=-1;
-    private TextView elapsedTimeTextView,durationTextView;
+    protected MediaPlayer mediaPlayer;
+    protected SeekBar seekBar;
+    protected RecyclerView recyclerView;
+    protected SongAdapter songAdapter;
+    protected AudioManager mAudioManager;
+    protected ArrayList<SongInfo> songsArray= new ArrayList<SongInfo>();
+    protected  final int REQ_CODE=123;
+    protected int prevPosition=-1,currentPosition=-1;
+    protected TextView elapsedTimeTextView,durationTextView;
     //private Handler handler;
-    private ImageButton playButton,nextButton,prevButton;
-    private int trial=0;
+    protected ImageButton playButton,nextButton,prevButton;
+    protected int trial=0;
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
     int size;
     boolean isPaused=false;
     int minutes=0,seconds=0;
-    private Thread updateThread;
+    protected Thread updateThread;
     Handler handler;
     Runnable runnable;
 
@@ -146,7 +146,7 @@ public class Tab1Fragment extends Fragment{
         recyclerView.setAdapter(songAdapter);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        recyclerView.setItemViewCacheSize(songAdapter.getItemCount());
+        recyclerView.setItemViewCacheSize(15);
         recyclerView.setHasFixedSize(true);
 
         handler=new Handler();
@@ -267,10 +267,12 @@ prevButton.setOnClickListener(new View.OnClickListener() {
                 return;
             }
             LoadSongs();
+            addSongsToAdapter();
 
         }else{//if it is less than marshmallow the permissions would be grantd at installation
             //so we will straight away load songs
             LoadSongs();
+            addSongsToAdapter();
         }
     }
 
@@ -288,7 +290,7 @@ prevButton.setOnClickListener(new View.OnClickListener() {
     }
 
 
-    private void LoadSongs() {//Time to fetch songs data
+    protected void LoadSongs() {//Time to fetch songs data
         /*
         uri stands for uniform resourse indicator,a lot lot like an url
         every url is uri but not every uri is url since url and urn(UR Names) are both
@@ -318,19 +320,25 @@ prevButton.setOnClickListener(new View.OnClickListener() {
                 }while(cursor.moveToNext());
             }//we have to get rid of cursor after use since it will be heavy on memory
             cursor.close();
-            //time to set all info in an adapter to display it
-            songAdapter=new SongAdapter(getContext(),songsArray);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setAdapter(songAdapter);
-            recyclerView.setItemViewCacheSize(songAdapter.getItemCount());
-            recyclerView.setHasFixedSize(true);
-            recyclerView.addItemDecoration(dividerItemDecoration);
             size=songsArray.size();
+            //time to set all info in an adapter to display it
+
+
 
         }
     }
+    private void addSongsToAdapter(){
+
+        songAdapter=new SongAdapter(getContext(),songsArray);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), linearLayoutManager.getOrientation());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(songAdapter);
+        recyclerView.setItemViewCacheSize(songAdapter.getItemCount());
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
