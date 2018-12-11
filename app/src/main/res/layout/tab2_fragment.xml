@@ -14,9 +14,37 @@
         android:id="@+id/textTab2"/>
 
     <Button
+        android:id="@+id/btnTEST2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnTEST2"
-        android:text="TESTBTN 2"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Stop" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/btnTEST2"
+        android:layout_below="@+id/textTab2"
+        android:layout_marginTop="55dp"
+        android:text="Song 1" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button"
+        android:layout_centerHorizontal="true"
+        android:text="Song 2" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/button2"
+        android:layout_marginEnd="21dp"
+        android:text="Song 3" />
 
 </RelativeLayout>
