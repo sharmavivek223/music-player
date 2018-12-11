@@ -106,6 +106,7 @@ public void setOnItemClickListner(OnItemClickListner onItemClickListner){
         return _songs.size();
     }
 
+    //will add details of each row of the song list.
     public class SongHolder extends RecyclerView.ViewHolder {
         TextView songName,artistName;
         //Button actionBtn;

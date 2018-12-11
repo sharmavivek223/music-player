@@ -43,7 +43,7 @@ public class Tab1Fragment extends Fragment{
     protected RecyclerView recyclerView;
     protected SongAdapter songAdapter;
     protected AudioManager mAudioManager;
-    protected ArrayList<SongInfo> songsArray= new ArrayList<SongInfo>();
+    static protected ArrayList<SongInfo> songsArray= new ArrayList<SongInfo>();
     protected  final int REQ_CODE=123;
     protected int prevPosition=-1,currentPosition=-1;
     protected TextView elapsedTimeTextView,durationTextView;
@@ -154,14 +154,15 @@ public class Tab1Fragment extends Fragment{
         nextButton=(ImageButton)view.findViewById(R.id.next_button);
         prevButton=(ImageButton)view.findViewById(R.id.prev_button);
         CheckPermission();
-
-playButton.setOnClickListener(new View.OnClickListener() {
+        //for play button
+        playButton.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
         pauseMediaPlayer();
     }
 });
-nextButton.setOnClickListener(new View.OnClickListener() {
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
         songsArray.get(currentPosition).setImageResource(null);
@@ -169,13 +170,13 @@ nextButton.setOnClickListener(new View.OnClickListener() {
         songAdapter.notifyItemChanged(currentPosition);
         prevPosition=currentPosition;
         playNextSong(currentPosition);
-    }
-});
-prevButton.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View view) {
-        if(currentPosition>=1)
-        {
+        }
+        });
+        prevButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+         public void onClick(View view) {
+            if(currentPosition>=1)
+            {
             songsArray.get(currentPosition).setImageResource(null);
             songAdapter.notifyItemChanged(currentPosition);
             prevPosition=currentPosition;
@@ -185,22 +186,17 @@ prevButton.setOnClickListener(new View.OnClickListener() {
             else
                 playNewSong(songsArray.get(0),0);
 
-
-
-        }
-
-        else {
-            //play the last song if the current song is first one.
-            songsArray.get(currentPosition).setImageResource(null);
-            //songAdapter.notifyDataSetChanged();
-            songAdapter.notifyItemChanged(currentPosition);
-            playNewSong(songsArray.get(songsArray.size()-1),songsArray.size()-1);
+            }
+            else {
+                //play the last song if the current song is first one.
+                songsArray.get(currentPosition).setImageResource(null);
+                //songAdapter.notifyDataSetChanged();
+                songAdapter.notifyItemChanged(currentPosition);
+                playNewSong(songsArray.get(songsArray.size()-1),songsArray.size()-1);
             }
     }
 });
-
-
-
+        //item click listener
         songAdapter.setOnItemClickListner(new SongAdapter.OnItemClickListner() {
             @Override
             public void onPlayClick( final View v, final SongInfo obj, int position, int index){

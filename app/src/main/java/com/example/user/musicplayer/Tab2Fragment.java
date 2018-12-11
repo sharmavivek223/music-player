@@ -36,8 +36,9 @@ public class Tab2Fragment extends Tab1Fragment {
 
 
         try{
-            LoadSongs();
-            //todo add some better way instead of loading songs again.
+            //LoadSongs();
+            //add some better way instead of loading songs again.
+            //taken care by making the array static,it wont destroy now.
 
             b1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -67,7 +68,7 @@ public class Tab2Fragment extends Tab1Fragment {
                 @Override
                 public void onClick(View view) {
                     mediaPlayer.stop();
-
+                    mediaPlayer=null;
                 }
             });
 
