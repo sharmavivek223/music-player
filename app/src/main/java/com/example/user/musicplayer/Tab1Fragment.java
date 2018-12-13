@@ -38,17 +38,17 @@ import Adapter.SongAdapter.SongHolder;
 
 public class Tab1Fragment extends Fragment{
     private static final String TAG = "Tab1Fragment";
-    protected MediaPlayer mediaPlayer;
-    protected SeekBar seekBar;
+    protected static MediaPlayer mediaPlayer;
+    protected static SeekBar seekBar;
     protected RecyclerView recyclerView;
     protected SongAdapter songAdapter;
     protected AudioManager mAudioManager;
     static protected ArrayList<SongInfo> songsArray= new ArrayList<SongInfo>();
     protected  final int REQ_CODE=123;
-    protected int prevPosition=-1,currentPosition=-1;
-    protected TextView elapsedTimeTextView,durationTextView;
+    protected static int prevPosition=-1,currentPosition=-1;
+    protected static TextView elapsedTimeTextView,durationTextView;
     //private Handler handler;
-    protected ImageButton playButton,nextButton,prevButton;
+    protected static ImageButton playButton,nextButton,prevButton;
     protected int trial=0;
     //trial variable controls raising sound at the end of notification sound
     double duration=0;
@@ -56,8 +56,8 @@ public class Tab1Fragment extends Fragment{
     boolean isPaused=false;
     int minutes=0,seconds=0;
     protected Thread updateThread;
-    Handler handler;
-    Runnable runnable;
+    protected static Handler handler;
+    protected static Runnable runnable;
 
 
 
@@ -135,9 +135,9 @@ public class Tab1Fragment extends Fragment{
         songsArray = new ArrayList<SongInfo>();
         mAudioManager=(AudioManager)getActivity().getSystemService(Context.AUDIO_SERVICE);
         recyclerView =(RecyclerView) view.findViewById(R.id.recyclerView);
-        seekBar = (SeekBar) view.findViewById(R.id.seekBar);
-        elapsedTimeTextView=(TextView)view.findViewById(R.id.elapsedTimeTextView);
-        durationTextView=(TextView)view.findViewById(R.id.durationTextView);
+        seekBar = (SeekBar) getActivity().findViewById(R.id.seekBar);
+        elapsedTimeTextView=(TextView)getActivity().findViewById(R.id.elapsedTimeTextView);
+        durationTextView=(TextView)getActivity().findViewById(R.id.durationTextView);
         songAdapter=new SongAdapter(getContext(),songsArray);
         recyclerView.setAdapter(songAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -150,9 +150,9 @@ public class Tab1Fragment extends Fragment{
         recyclerView.setHasFixedSize(true);
 
         handler=new Handler();
-        playButton=(ImageButton)view.findViewById(R.id.play_button);
-        nextButton=(ImageButton)view.findViewById(R.id.next_button);
-        prevButton=(ImageButton)view.findViewById(R.id.prev_button);
+        playButton=(ImageButton) getActivity().findViewById(R.id.play_button);
+        nextButton=(ImageButton)getActivity().findViewById(R.id.next_button);
+        prevButton=(ImageButton)getActivity().findViewById(R.id.prev_button);
         CheckPermission();
         //for play button
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -272,7 +272,7 @@ public class Tab1Fragment extends Fragment{
         }
     }
 
-    private String timeConvertor(int millis){
+    protected String timeConvertor(int millis){
         millis=millis/1000;
         int c= Math.round(millis);
         minutes=c/60;
